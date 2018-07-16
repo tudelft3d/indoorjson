@@ -11,24 +11,20 @@ IndoorJSON specifications
 IndoorJSON Object
 -----------------
 
-A CityJSON object represents one 3D city model of a given area, this model may contain features of different types, as defined in the CityGML data model.
+A IndoorJSON object represents one indoor model of a given building.
 
-- A CityJSON object is a JSON object.
-- A CityJSON object must have the following 4 members: 
+- A IndoorJSON object is a JSON object.
+- A IndoorJSON object must have the following 4 members: 
 
-  #. one member with the name ``"type"``, whose value must be ``"CityJSON"``;
-  #. one member with the name ``"version"``, whose value must be a string with the version (X.Y) of CityJSON used;
-  #. one member with the name ``"CityObjects"``. The value of this member is a collection of key-value pairs, where the key is the ID of the object, and the value is one City Object. The ID of a City Object should be unique (within one dataset/file).
+  #. one member with the name ``"type"``, whose value must be ``"IndoorJSON"``;
+  #. one member with the name ``"version"``, whose value must be a string with the version (X.Y) of IndoorJSON used;
+  #. one member with the name ``"PrimalSpaceFeatures"``. The value of this member is a collection of key-value pairs, where the key is the ID of the CellSpace, and the value is one CellSpace. The ID of a Cell Space should be unique (within one dataset/file).
+  #. one member with the name ``"SpaceLayers"``. This is used to represent each of the dual graphs. The value of this member is a collection of key-value pairs, where the key is the ID of a dual graph, and the value is a collection of key-value pairs in which each nodes/States is represented. The ID of a Cell Space should be unique (within one dataset/file).
   #. one member with the name ``"vertices"``, whose value is an array of coordinates of each vertex of the city model. Their position in this array (0-based) is used as an index to be referenced by the Geometric Objects. The indexing mechanism of the format `Wavefront OBJ <https://en.wikipedia.org/wiki/Wavefront_.obj_file>`_ is basically reused.
 
-- A CityJSON may have one member with the name ``"metadata"``, whose value may contain JSON objects describing the coordinate reference system used, the extent of the dataset, its creator, etc.
-- A CityJSON may have one member with the name ``"extensions"``, used if there are Extensions used in the file, see the page :doc:`extensions` for all the details.
-- A CityJSON may have one member with the name ``"transform"``, whose value must contain 2 JSON objects describing how to *decompress* the coordinates. Transform is used to reduce the file size only.
-- A CityJSON may have one member with name ``"appearance"``, the value may contain JSON objects representing the textures and/or materials of surfaces.
-- A CityJSON may have one member with name ``"geometry-templates"``, the value may contain JSON objects representing the templates that can be reused by different City Objects (usually for trees). This is the concept of "implicit geometries" in CityGML.
-- A CityJSON may have other members, and their value is not prescribed. Because these are not standard in CityJSON, they might be ignored by parsers.
+- A IndoorJSON may have one member with the name ``"metadata"``, whose value may contain JSON objects describing the coordinate reference system used, the extent of the dataset, its creator, etc.
 
-The minimal valid CityJSON object is thus:
+The minimal valid IndoorJSON object is thus:
 
 .. code-block:: js
 
@@ -57,8 +53,6 @@ An "empty" CityJSON will look like this:
 
 .. note::
   While the order of the member values of a IndoorJSON should preferably be as above, not all JSON generators allow one to do this, thus the order is not prescribed.
-
-
 
 
 ----------------
@@ -140,15 +134,6 @@ Arrays to represent boundaries
     "boundaries": [2, 44, 0, 7]
   }
 
-.. code-block:: js
-
-  {
-    "type": "MultiLineString",
-    "lod": 1,
-    "boundaries": [
-      [2, 3, 5], [77, 55, 212]
-    ]  
-  }
 
 
 .. code-block:: js
@@ -172,140 +157,4 @@ Arrays to represent boundaries
     ]
   }
 
-.. code-block:: js
-
-  {
-    "type": "CompositeSolid",
-    "lod": 3,
-    "boundaries": [
-      [ //-- 1st Solid
-        [ [[0, 3, 2, 1, 22]], [[4, 5, 6, 7]], [[0, 1, 5, 4]], [[1, 2, 6, 5]] ],
-        [ [[240, 243, 124]], [[244, 246, 724]], [[34, 414, 45]], [[111, 246, 5]] ]
-      ],
-      [ //-- 2st Solid
-        [ [[666, 667, 668]], [[74, 75, 76]], [[880, 881, 885]], [[111, 122, 226]] ] 
-      ]    
-    ]
-  }
-
-
-.. _specs_semantics:
-
-
-Semantic Surface Object
-***********************
-
-A Semantics Surface is a JSON object representing the semantics of a surface, and may also represent other attributes of the surface (eg the slope of the roof or the solar potential).
-A Semantic Object:
-  
-  - must have one member with the name ``"type"``, whose value is one of the allowed value. These depend on the City Object, see below.
-  - may have other attributes in the form of a JSON key-value pair, where the value must not be a JSON object (but a string/number/integer/boolean). 
-
-.. code-block:: js
-
-  {
-    "type": "RoofSurface",
-    "slope": 16.4,
-    "solar-potential": 5
-  }
-
-----
-
-.. rubric:: Values for Semantics
-
-``"Building"``, ``"BuildingPart"``, and ``"BuildingInstallation"`` can have the following semantics for (LoD0 to LoD3; LoD4 is omitted):
-
-
-  * ``"RoofSurface"`` 
-  * ``"GroundSurface"`` 
-  * ``"WallSurface"``
-  * ``"ClosureSurface"``
-  * ``"OuterCeilingSurface"``
-  * ``"OuterFloorSurface"``
-  * ``"Window"``
-  * ``"Door"``
-
-For ``"WaterBody"``:
-
-  * ``"WaterSurface"``
-  * ``"WaterGroundSurface"``
-  * ``"WaterClosureSurface"``
-
-For Transportation (``"Road"``, ``"Railway"``, ``"TransportSquare"``):
-
-  * ``"TrafficArea"``
-  * ``"AuxiliaryTrafficArea"``
-
-----
-
-Because in one given City Object (say a ``"Building"``) several surfaces can have the same semantics (think of a complex building that has been triangulated, there can be dozens of triangles used to model the same surface), a Semantic Surfaces object has to be declared once, and each of the surfaces used to represent it points to it.
-This is achieved by first declaring all the Semantic Surfaces in an array, and then having an array where each surface links to Semantic Surfaces (position in the array).
-
-A Geometry object:
-
-  - may have one member with the name ``"semantics"``, whose values are two keys ``"surfaces"`` and ``"values"``. Both have to be present.
-  -  the value of ``"surfaces"`` is an array of Semantic Surface Objects.
-  -  the value of ``"values"`` is a hierarchy of arrays (the depth depends on the Geometry object; it is two less than the array ``"boundaries"``) with integers. An integer refers to the index in the ``"surfaces"`` array of the same geometry, and it is 0-based. If one surface has no semantics, a value of ``null`` must be used.
-
-.. code-block:: js
-
-  {
-    "type": "MultiSurface",
-    "lod": 2,
-    "boundaries": [
-      [[0, 3, 2, 1]], [[4, 5, 6, 7]], [[0, 1, 5, 4], [[0, 2, 3, 8], [[10, 12, 23, 48]]
-    ],
-    "semantics": {
-      "surfaces" : [
-        {
-          "type": "RoofSurface",
-          "slope": 33.4
-        }, 
-        {
-          "type": "RoofSurface",
-          "slope": 66.6
-        },
-        {
-          "type": "GroundSurface"
-        }
-      ],
-      "values": [0, 0, null, 1, 2]
-    },
-  }
-
-.. note::
-   A ``null`` value is used to specify that a given surface has no semantics, but to avoid having arrays filled with ``null``, it is also possible to specify ``null`` for a shell or a whole Solid in a MultiSolid, the ``null`` propagates to the nested arrays.
-
-   .. code-block:: js
-     
-     {
-        "type": "CompositeSolid",
-        "lod": 2,
-        "boundaries": [
-          [ //-- 1st Solid
-            [ [[0, 3, 2, 1, 22]], [[4, 5, 6, 7]], [[0, 1, 5, 4]], [[1, 2, 6, 5]] ]
-          ],
-          [ //-- 2nd Solid
-            [ [[666, 667, 668]], [[74, 75, 76]], [[880, 881, 885]], [[111, 122, 226]] ] 
-          ]    
-        ],
-        "semantics": {
-          "surfaces" : [
-            {      
-              "type": "RoofSurface",
-            }, 
-            {
-              "type": "WallSurface",
-            }
-          ],
-          "values": [
-            [ //-- 1st Solid
-              [0, 1, 1, null]
-            ],
-            [ //-- 2nd Solid get all null values
-              null
-            ]
-          ]
-        }
-      }  
 
