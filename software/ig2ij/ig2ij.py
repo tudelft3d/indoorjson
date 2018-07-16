@@ -37,13 +37,15 @@ def main():
         slid, jgraph = read_dual_graph(sl, j)
         j['SpaceLayers'][slid] = jgraph
 
+    read_cells(root, j)
+
+    #-- save and be-bye
     json_str = json.dumps(j, indent=2)
     # print (json_str)
     fo = open('/Users/hugo/temp/z.json', 'w')
     fo.write(json_str)
 
 
-    # read_cells(root)
 
     # except:
     #     print ("ERROR: problems while parsing the XML file.")
@@ -58,9 +60,13 @@ def read_dual_graph(sl, j):
     dEdges = {}
     for tr in sl.findall(".//{%s}Transition" % ns['indoorgml']):
         connects = tr.findall("./{%s}connects" % ns['indoorgml'])
+        weight = tr.find("./{%s}weight" % ns['indoorgml'])
+        if weight is not None:
+            weight = float(weight.text)
+        # print ('weight:', weight)
         a = connects[0].get("{%s}href" % ns['xlink'])[1:]
         b = connects[1].get("{%s}href" % ns['xlink'])[1:]
-        dEdges[tr.get("{%s}id" % ns['gml'])] = (a, b)
+        dEdges[tr.get("{%s}id" % ns['gml'])] = (a, b, weight)
     #-- store all nodes/States
     for v in sl.findall(".//{%s}State" % ns['indoorgml']):
         jv = {}
@@ -73,37 +79,55 @@ def read_dual_graph(sl, j):
         # print (tmp)
         j['vertices'].append(tmp)
         jv['geometry'] = len(j['vertices']) - 1
-
         lsAdj = []
+        jv['edges'] = []
         for each in v.findall("./{%s}connects" % ns['indoorgml']):
             s = each.get("{%s}href" % ns['xlink'])[1:]  
             if (dEdges[s][1] != vid):
                 lsAdj.append(dEdges[s][1])
-        jv['edges'] = {}
+                jt = {}
+                jt['type'] = 'Transition'
+                jt['end'] = dEdges[s][1]
+                jt['weight'] = dEdges[s][2]
+                # TODO : do the vertices for non-straight edges
+                jv['edges'].append(jt)
+       
         jgraph[vid] = jv
     return slid, jgraph
 
 
-
-
-
-    
-
-
-def read_cells(root):
+def read_cells(root, j):
     for cell in root.findall(".//{%s}CellSpace" % ns['indoorgml']):
-        # print (cell)
+        jc = {}
+        jc['type'] = 'CellSpace'
         id = cell.get("{%s}id" % ns['gml'])
-        print (id)
-        
+        # duality
         tmp = cell.find("./{%s}duality" % ns['indoorgml'])
-        duality = tmp.get("{%s}href" % ns['xlink'])
-        if duality[0] == '#':
-            duality = duality[1:]
-        print (duality)
-
+        if tmp is not None:
+            duality = tmp.get("{%s}href" % ns['xlink'])
+            if duality[0] == '#':
+                duality = duality[1:]
+            jc['duality'] = duality
+            # which of the (potentially) different dual graphs?
+            if len(j['SpaceLayers']) == 1:
+                key, i = list(j['SpaceLayers'].items())[0]
+                jc['duality-spacelayer'] = key
+            else:
+                for key, value in j['SpaceLayers'].items():
+                    if duality in value:
+                        jc['duality-spacelayer'] = key
+                        break
+        # name
+        tmp = cell.find("./{%s}name" % ns['gml'])
+        if tmp is not None:
+            jc['name'] = tmp.text
+        # TODO: externalReference
+        # tmp = cell.find("./{%s}externalReference" % ns['indoorgml'])
+        # if tmp is not None:
+            # jc['externalReference'] = tmp.text
         solid = cell.find(".//{%s}Solid" % ns['gml'])
-        print (solid)
+        jc['geometry'] = {}
+        j['PrimalSpaceFeatures'][id] = jc
 
 
 
