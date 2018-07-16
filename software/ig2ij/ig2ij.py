@@ -130,38 +130,5 @@ def read_cells(root, j):
         j['PrimalSpaceFeatures'][id] = jc
 
 
-
-# def convert(fIn):
-#   #-- skip the header
-#   l = fIn.next()
-#   while (len(l) == 0) or (l[0] == '#') or (l[:3] == 'OFF'):
-#     l = fIn.next()
-#   numVertices = int(l.split()[0])
-#   numFaces    = int(l.split()[1])
-#   lstVertices = []
-#   for i in range(numVertices):
-#     lstVertices.append(map(float, fIn.next().split()))
-#   lstFaces = []
-#   for i in range(numFaces):
-#     lstFaces.append(map(int, fIn.next().split()[1:]))
-#   cm = {}
-#   cm["type"] = "CityJSON"
-#   cm["version"] = "0.6"
-#   cm["CityObjects"] = {}
-#   cm["vertices"] = []
-#   for v in lstVertices:
-#     cm["vertices"].append(v)
-#   g = {'type': 'Solid'}
-#   shell = []
-#   for f in lstFaces:
-#     shell.append([f])
-#   g['boundaries'] = [shell]
-#   g['lod'] = 1
-#   o = {'type': 'GenericCityObject'}
-#   o['geometry'] = [g]
-#   cm["CityObjects"]["id-1"] = o
-#   return cm
-
-
 if __name__ == "__main__":
     main()  
