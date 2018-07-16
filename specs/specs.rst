@@ -1,7 +1,7 @@
 
-=======================
-IndoorJSON specifications
-=======================
+==============================
+IndoorJSON specifications v0.1
+==============================
 
 
 .. contents:: :local:
