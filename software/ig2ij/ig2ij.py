@@ -64,10 +64,16 @@ def read_dual_graph(sl, j):
         weight = tr.find("./{%s}weight" % ns['indoorgml'])
         if weight is not None:
             weight = float(weight.text)
-        # print ('weight:', weight)
         a = connects[0].get("{%s}href" % ns['xlink'])[1:]
         b = connects[1].get("{%s}href" % ns['xlink'])[1:]
-        dEdges[tr.get("{%s}id" % ns['gml'])] = (a, b, weight)
+        #-- look for extra vertices that break the straight line segments... 
+        ngeom = tr.find("./{%s}geometry" % ns['indoorgml'])
+        extrav = []
+        if ngeom != None:
+            allpos = ngeom.findall(".//{%s}pos" % ns['gml'])
+            if (len(allpos) > 2):
+                extrav = allpos[1:-1]
+        dEdges[tr.get("{%s}id" % ns['gml'])] = (a, b, weight, extrav)
     #-- store all nodes/States
     for v in sl.findall(".//{%s}State" % ns['indoorgml']):
         jv = {}
@@ -77,7 +83,6 @@ def read_dual_graph(sl, j):
         tmp = v.find("./{%s}duality" % ns['indoorgml'])
         jv['duality'] = tmp.get("{%s}href" % ns['xlink'])[1:] 
         tmp = list(map(float, v.find(".//{%s}pos" % ns['gml']).text.split()))
-        # print (tmp)
         j['vertices'].append(tmp)
         jv['geometry'] = len(j['vertices']) - 1
         lsAdj = []
@@ -90,7 +95,16 @@ def read_dual_graph(sl, j):
                 jt['type'] = 'Transition'
                 jt['end'] = dEdges[s][1]
                 jt['weight'] = dEdges[s][2]
-                # TODO : do the vertices for non-straight edges
+                jt['extra_vertices'] = None
+                # vertices for non-straight edges
+                if (len(dEdges[s][3]) > 0):
+                    # print("add extra v", dEdges[s][3])
+                    jt['extra_vertices'] = []
+                    for each in dEdges[s][3]:
+                        # print (each.text)
+                        v = list(map(float, each.text.split()))
+                        j['vertices'].append(v)    
+                        jt['extra_vertices'].append(len(j['vertices']) - 1)
                 jv['edges'].append(jt)
        
         jgraph[vid] = jv
@@ -98,7 +112,6 @@ def read_dual_graph(sl, j):
 
 
 def read_cells(root, j):
-    lsPts = []
     for cell in root.findall(".//{%s}CellSpace" % ns['indoorgml']):
         jc = {}
         jc['type'] = 'CellSpace'
@@ -129,7 +142,6 @@ def read_cells(root, j):
             # jc['externalReference'] = tmp.text
         # Solid
         jc['geometry'] = {'type': 'Solid'}
-        jc['geometry']['boundaries'] = []
 
         nsol = cell.find(".//{%s}Solid" % ns['gml'])
         solid = []
@@ -137,28 +149,27 @@ def read_cells(root, j):
         shell = []
         for npoly in nsh.findall(".//{%s}Polygon" % ns['gml']):
             nexterior = npoly.find(".//{%s}exterior" % ns['gml'])
-            lr = parse_gml_polygon_ring(nexterior, lsPts)
+            lr = parse_gml_polygon_ring(nexterior, j['vertices'])
             polygon = [lr]
             ninteriors = npoly.findall(".//{%s}interior" % ns['gml'])
             if len(ninteriors) != 0:
                 irings = []
                 for i in range(len(ninteriors)):
-                    polygon.append(parse_gml_polygon_ring(intnodes[i], lsPts))
+                    polygon.append(parse_gml_polygon_ring(intnodes[i], j['vertices']))
             shell.append(polygon)
         # TODO : INTERIOR SHELLS
         solid.append(shell)
-        jc['geometry']['boundaries'].append(solid)
+        jc['geometry']['boundaries'] = solid
         j['PrimalSpaceFeatures'][id] = jc
-    j['vertices'] = [lsPts]
 
 
-def parse_gml_polygon_ring(n, lsPts):
+def parse_gml_polygon_ring(n, jvertices):
     allgmlpos = n.findall(".//{%s}pos" % ns['gml'])
     ring = []
     for i in allgmlpos:
         v = list(map(float, i.text.split()))
-        lsPts.append(v)    
-        ring.append(len(lsPts) - 1)
+        jvertices.append(v)    
+        ring.append(len(jvertices) - 1)
     return ring    
 
 
