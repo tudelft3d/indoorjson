@@ -32,11 +32,12 @@ def main():
     j['SpaceLayers'] = {}
     j['vertices'] = []
 
-
+    #-- dual space 
     for sl in root.findall(".//{%s}SpaceLayer" % ns['indoorgml']):
         slid, jgraph = read_dual_graph(sl, j)
         j['SpaceLayers'][slid] = jgraph
 
+    #-- dual space 
     read_cells(root, j)
 
     #-- save and be-bye
@@ -97,6 +98,7 @@ def read_dual_graph(sl, j):
 
 
 def read_cells(root, j):
+    lsPts = []
     for cell in root.findall(".//{%s}CellSpace" % ns['indoorgml']):
         jc = {}
         jc['type'] = 'CellSpace'
@@ -125,9 +127,39 @@ def read_cells(root, j):
         # tmp = cell.find("./{%s}externalReference" % ns['indoorgml'])
         # if tmp is not None:
             # jc['externalReference'] = tmp.text
-        solid = cell.find(".//{%s}Solid" % ns['gml'])
-        jc['geometry'] = {}
+        # Solid
+        jc['geometry'] = {'type': 'Solid'}
+        jc['geometry']['boundaries'] = []
+
+        nsol = cell.find(".//{%s}Solid" % ns['gml'])
+        solid = []
+        nsh = nsol.find("./{%s}exterior" % ns['gml'])
+        shell = []
+        for npoly in nsh.findall(".//{%s}Polygon" % ns['gml']):
+            nexterior = npoly.find(".//{%s}exterior" % ns['gml'])
+            lr = parse_gml_polygon_ring(nexterior, lsPts)
+            polygon = [lr]
+            ninteriors = npoly.findall(".//{%s}interior" % ns['gml'])
+            if len(ninteriors) != 0:
+                irings = []
+                for i in range(len(ninteriors)):
+                    polygon.append(parse_gml_polygon_ring(intnodes[i], lsPts))
+            shell.append(polygon)
+        # TODO : INTERIOR SHELLS
+        solid.append(shell)
+        jc['geometry']['boundaries'].append(solid)
         j['PrimalSpaceFeatures'][id] = jc
+    j['vertices'] = [lsPts]
+
+
+def parse_gml_polygon_ring(n, lsPts):
+    allgmlpos = n.findall(".//{%s}pos" % ns['gml'])
+    ring = []
+    for i in allgmlpos:
+        v = list(map(float, i.text.split()))
+        lsPts.append(v)    
+        ring.append(len(lsPts) - 1)
+    return ring    
 
 
 if __name__ == "__main__":
