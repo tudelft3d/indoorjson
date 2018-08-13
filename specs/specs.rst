@@ -80,8 +80,8 @@ A Geometry object is a JSON object for which the type member’s value is one of
 
 A Geometry object:
 
-  - must have one member with the name ``"type"``, whose value is one of the strings above 
-  - must have one member with the name ``"boundaries"``, whose value is either a single integer for a ``"Point"``, or a hierarchy of arrays (the depth depends on the Geometry object) with integers. The integers refer to the index in the ``"vertices"`` array of the IndoorJSON object, and it is 0-based (ie the first element in the array has the index "0", the second one "1").
+- must have one member with the name ``"type"``, whose value is one of the strings above 
+- must have one member with the name ``"boundaries"``, whose value is either a single integer for a ``"Point"``, or a hierarchy of arrays (the depth depends on the Geometry object) with integers. The integers refer to the index in the ``"vertices"`` array of the IndoorJSON object, and it is 0-based (ie the first element in the array has the index "0", the second one "1").
 
 
 
@@ -91,9 +91,9 @@ The coordinates of the vertices
 A IndoorJSON must have one member named ``"vertices"``, whose value is an array of coordinates of each vertex of the city model. 
 Their position in this array (0-based) is used to represent the Geometric Objects.
 
-  - one vertex must be an array with exactly 3 values, representing the *(x,y,z)* location of the vertex.
-  - the array of vertices may be empty.
-  - vertices may be repeated
+- one vertex must be an array with exactly 3 values, representing the *(x,y,z)* location of the vertex.
+- the array of vertices may be empty.
+- vertices may be repeated
 
 
 .. code-block:: js
