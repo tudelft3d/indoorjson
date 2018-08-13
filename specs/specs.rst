@@ -4,7 +4,13 @@ IndoorJSON specifications v0.1
 ==============================
 
 
+
+.. image:: two.svg
+   :width: 300px
+
 .. contents:: :local:
+
+
 
 
 -----------------
