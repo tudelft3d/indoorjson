@@ -1,0 +1,182 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "IndoorJSON v0.5",
+  "description": "IndoorJSON specifications v0.1",
+  "type": "object",
+
+  "definitions": {
+
+    "CellSpace": {
+      "type": "object",
+      "properties": {
+        "type": { "enum": ["CellSpace"] },
+        "name" : {"type": "string"},
+        "duality" : {"type": "string"},
+        "duality-spacelayer" : {"type": "string"},
+        "geometry" : { 
+          "oneOf": [
+            {"$ref": "#/definitions/Solid"},
+            {"$ref": "#/definitions/CompositeSolid"},
+            {"$ref": "#/definitions/CompositeSurface"}
+          ] 
+        }
+      },
+      "additionalProperties": false,
+      "required": ["type"]
+    },
+
+    "Node": {
+      "type": "object",
+      "properties": {
+        "type": { "enum": ["Node"] },
+        "name" : {"type": "string"},
+        "duality" : {"type": "string"},
+        "geometry" : { "$ref": "#/definitions/Point" },
+        "edges" : { 
+          "type": "array",
+          "items": {"$ref": "#/definitions/EdgeObject"}
+        }
+      },
+      "additionalProperties": false,
+      "required": ["type"]
+    },
+
+
+    "EdgeObject": {
+      "type": "object",
+      "properties": {
+        "type": { "enum": ["Edge"] },
+        "name" : {"type": "string"},
+        "description" : {"type": "string"},
+        "destination" : {"type": "string"},
+        "weight" : {"type": "number"},
+        "extra_nodes" : { 
+          "type": "array",
+          "items": {"type": "integer"}
+        }
+      },
+      "additionalProperties": false,
+      "required": ["type"]
+    },
+
+
+    "Solid": {
+      "type": "object",
+      "properties": {
+        "type": { "enum": ["Solid"] },
+        "boundaries": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": { "type": "integer" }
+              }
+            }
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": ["type", "boundaries"]
+    },
+
+
+    "CompositeSolid": {
+      "type": "object",
+      "properties": {
+        "type": { "enum": ["CompositeSolid"] },
+        "boundaries": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {"type": "integer"}
+                }
+              }
+            }
+          }
+        }
+      }, 
+      "additionalProperties": false,       
+      "required": ["type", "boundaries"]
+    },
+
+
+    "CompositeSurface": {
+      "type": "object",
+      "properties": {
+        "type": { "enum": ["CompositeSurface"] },
+        "boundaries": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "array",
+                "items": { "type": "integer" }
+            }
+          }
+        }
+      }, 
+      "additionalProperties": false,       
+      "required": ["type", "boundaries"]
+    },
+
+
+    "LineString": {
+      "type": "object",
+      "properties": {
+        "type": { "enum": ["MultiLineString"] },
+        "boundaries": {
+          "type": "array",
+          "items": {"type": "integer"}
+        }
+      }, 
+      "additionalProperties": false,       
+      "required": ["type", "boundaries"]
+    },
+
+
+    "Point": {
+      "type": "object",
+      "properties": {
+        "type": { "enum": ["MultiPoint"] },
+        "boundaries": { 
+           "type": "integer"
+        }
+      },
+      "additionalProperties": false,
+      "required": ["type", "boundaries"]
+    }
+
+  },
+
+  "properties": {
+    "type": { "enum": ["IndoorJSON"] },
+    "version": { 
+      "type": "string",
+      "pattern": "\\d.\\d"
+    },
+    "PrimalSpaceFeatures": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/definitions/CellSpace" }
+    },
+    "vertices": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {"type": "number"},
+        "minItems": 3,    
+        "maxItems": 3
+      }
+    }
+  },
+  "required": ["type", "version", "PrimalSpaceFeatures", "SpaceLayers", "vertices"]
+}
+
