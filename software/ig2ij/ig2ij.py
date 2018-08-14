@@ -42,6 +42,7 @@ def main():
 
     #-- save and be-bye
     json_str = json.dumps(j, indent=2)
+    # json_str = json.dumps(j, separators=(',',':'))
     # print (json_str)
     fo = open('/Users/hugo/temp/z.json', 'w')
     fo.write(json_str)
@@ -77,14 +78,14 @@ def read_dual_graph(sl, j):
     #-- store all nodes/States
     for v in sl.findall(".//{%s}State" % ns['indoorgml']):
         jv = {}
-        jv['type'] = 'State'
+        jv['type'] = 'Node'
         vid = v.get("{%s}id" % ns['gml'])
         # print ("vid", vid)
         tmp = v.find("./{%s}duality" % ns['indoorgml'])
         jv['duality'] = tmp.get("{%s}href" % ns['xlink'])[1:] 
         tmp = list(map(float, v.find(".//{%s}pos" % ns['gml']).text.split()))
         j['vertices'].append(tmp)
-        jv['geometry'] = len(j['vertices']) - 1
+        jv['geometry'] = {'type': 'Point', 'boundaries': len(j['vertices']) - 1}
         lsAdj = []
         jv['edges'] = []
         for each in v.findall("./{%s}connects" % ns['indoorgml']):
@@ -92,19 +93,19 @@ def read_dual_graph(sl, j):
             if (dEdges[s][1] != vid):
                 lsAdj.append(dEdges[s][1])
                 jt = {}
-                jt['type'] = 'Transition'
+                jt['type'] = 'Edge'
                 jt['end'] = dEdges[s][1]
                 jt['weight'] = dEdges[s][2]
-                jt['extra_vertices'] = None
+                jt['extra_nodes'] = None
                 # vertices for non-straight edges
                 if (len(dEdges[s][3]) > 0):
                     # print("add extra v", dEdges[s][3])
-                    jt['extra_vertices'] = []
+                    jt['extra_nodes'] = []
                     for each in dEdges[s][3]:
                         # print (each.text)
                         v = list(map(float, each.text.split()))
                         j['vertices'].append(v)    
-                        jt['extra_vertices'].append(len(j['vertices']) - 1)
+                        jt['extra_nodes'].append(len(j['vertices']) - 1)
                 jv['edges'].append(jt)
        
         jgraph[vid] = jv
