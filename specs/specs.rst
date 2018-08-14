@@ -135,6 +135,7 @@ An Edge Object, also called Transition in IndoorGML, represents implicitly one e
 - must have a member named ``"type"``, whose value must be ``"Edge"``;
 - may have a member named ``"name"``, whose value is a string describing its name;
 - may have a member named ``"description"``, whose value is a string describing it
+- must have a member named ``"destination"``, whose value the ID of the Node Object of the destination (end node) of the edge.
 - may have one member named ``"weight"``, whose value is the weight of the Edge Object (a float value).
 - may have one member named ``"extra_nodes"``. This is used for line segments that are not straight (between the origin and the destination). Only the intermediate Nodes Objects (their IDs) are listed in the array, to save space and avoid repetition.
 
