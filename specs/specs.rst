@@ -4,9 +4,8 @@ IndoorJSON specifications v0.1
 ==============================
 
 
-.. image:: logo2.svg
+.. image:: logo.svg
    :width: 300px
-
 
 
 .. contents:: :local:
@@ -19,30 +18,18 @@ IndoorJSON Object
 A IndoorJSON object represents one indoor model of a given building.
 
 - A IndoorJSON object is a JSON object.
-- A IndoorJSON object must have the following 4 members: 
+- A IndoorJSON object must have the following 5 members: 
 
   #. one member with the name ``"type"``, whose value must be ``"IndoorJSON"``;
   #. one member with the name ``"version"``, whose value must be a string with the version (X.Y) of IndoorJSON used;
   #. one member with the name ``"PrimalSpaceFeatures"``. The value of this member is a collection of key-value pairs, where the key is the ID of the CellSpace, and the value is one CellSpace. The ID of a Cell Space should be unique (within one dataset/file).
-  #. one member with the name ``"SpaceLayers"``. This is used to represent each of the dual graphs. The value of this member is a collection of key-value pairs, where the key is the ID of a dual graph, and the value is a collection of key-value pairs in which each nodes/States is represented. The ID of a Cell Space should be unique (within one dataset/file).
+  #. one member with the name ``"SpaceLayers"``. This is used to represent each of the dual graphs (there can be many). The value of this member is a collection of key-value pairs, where the key is the ID of a dual graph, and the value is a collection of key-value pairs in which each node (also called 'States') is represented. The ID of a Cell Space should be unique (within one dataset/file).
   #. one member with the name ``"vertices"``, whose value is an array of coordinates of each vertex of the city model. Their position in this array (0-based) is used as an index to be referenced by the Geometric Objects. The indexing mechanism of the format `Wavefront OBJ <https://en.wikipedia.org/wiki/Wavefront_.obj_file>`_ is basically reused.
 
+- A IndoorJSON may have one member with the name ``"InterLayerConnections"``, whose value is a list of JSON objects describing the relationships between different SpaceLayers.
 - A IndoorJSON may have one member with the name ``"metadata"``, whose value may contain JSON objects describing the coordinate reference system used, the extent of the dataset, its creator, etc.
 
-The minimal valid IndoorJSON object is thus:
-
-.. code-block:: js
-
-  {
-    "type": "IndoorJSON",
-    "version": "0.1",
-    "PrimalSpaceFeatures": {},
-    "SpaceLayers": {},
-    "InterLayerConnections": {},
-    "vertices": []
-  }
-
-An "empty" IndoorJSON will look like this:
+An "empty" IndoorJSON object looks like this:
 
 .. code-block:: js
 
