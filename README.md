@@ -1,6 +1,7 @@
 
 # IndoorJSON
 
+![](specs/figs/logo.svg)
 
 IndoorJSON is a format for encoding of the [IndoorGML](http://indoorgml.net) data model using [JavaScript Object Notation (JSON)](http://json.org).
 
