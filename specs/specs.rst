@@ -47,6 +47,97 @@ An "empty" IndoorJSON object looks like this:
   While the order of the member values of a IndoorJSON should preferably be as above, not all JSON generators allow one to do this, thus the order is not prescribed.
 
 
+-------------------
+PrimalSpaceFeatures
+-------------------
+
+The CellSpace Objects (which subdivides the space; also called the primal space):
+
+- must have a member named ``"type"``, whose value must be ``"CellSpace"``;
+- may have a member named ``"name"``, whose value is a string describing the name of CellSpace;
+- may have one member named ``"duality"``, whose value is the ID of the Node in the dual graph;
+- may have a member named ``"duality-spacelayer"``, whose value is the ID of the dual graph (``"SpaceLayers"``). Both ``"duality-spacelayer"`` and and ``"duality"`` are necessary to identify a node since there can be more than one dual graph.
+- may have one member named ``"geometry"``, whose value is Geometry Objects. 
+- may have a member name ``"externalReference"``, whose value is a JSON object that must contain 2 members (both stings): ``"informationSystem"`` (URI of the file) and ``"externalObject"`` (ID of the object in the file).
+
+
+.. code-block:: js
+
+  "PrimalSpaceFeatures": {
+    "Cell01": {
+      "type": "CellSpace",
+      "name": "myCell_01",
+      "duality": "R1",
+      "duality-spacelayer": "dualgraph_01",
+      "geometry": {
+        "type": "Solid",
+        "boundaries": [...]
+      }
+    },
+    "Cell87": {
+      "type": "CellSpace",
+      "name": "myCell_87",
+      "duality": "vertex234",
+      "duality-spacelayer": "IS1",
+      "geometry": {
+        "type": "Solid",
+        "boundaries": [...]
+      }
+    }
+  }
+
+
+-----------
+SpaceLayers
+-----------
+
+``"SpaceLayers"`` is one JSON object, it is a collection of key-value pairs, where the key is the ID of a dual graph, and the value is a collection of key-value pairs in which each node (Node Object; also called "States") is represented.
+
+.. code-block:: js
+
+  "SpaceLayers": {
+    "dualgraph_01": {
+      "R1": {
+        "type": "Node",
+        "duality": "C1",
+        ...
+      },
+      ...
+    },
+    "dualgraph_02": {
+      "anode_92": {
+        "type": "Node",
+        "duality": "C1",
+        ...
+      },
+      ...
+    }
+  }
+
+
+Node Object (State)
+*******************
+
+A Node Object, also called State in IndoorGML, represents one node of the dual graph. It:
+
+- must have a member named ``"type"``, whose value must be ``"Node"``;
+- may have a member named ``"name"``, whose value is a string describing its name
+- may have one member named ``"duality"``, whose value is the ID (of type string) of the CellSpace object in the PrimalSpaceFeatures;
+- may have one member named ``"geometry"``, whose value is Geometry Objects of type ``"Point"``.
+
+
+Edge Object (Transition)
+************************
+
+An Edge Object, also called Transition in IndoorGML, represents implicitly one edge having a given Node Object as its origin. It:
+
+- must have a member named ``"type"``, whose value must be ``"Edge"``;
+- may have a member named ``"name"``, whose value is a string describing its name;
+- may have a member named ``"description"``, whose value is a string describing it
+- may have one member named ``"weight"``, whose value is the weight of the Edge Object (a float value).
+- may have one member named ``"extra_nodes"``. This is used for line segments that are not straight (between the origin and the destination). Only the intermediate Nodes Objects (their IDs) are listed in the array, to save space and avoid repetition.
+
+
 ----------------
 Geometry Objects
 ----------------
