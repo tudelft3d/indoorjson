@@ -139,6 +139,26 @@ An Edge Object, also called Transition in IndoorGML, represents implicitly one e
 - may have one member named ``"weight"``, whose value is the weight of the Edge Object (a float value).
 - may have one member named ``"extra_nodes"``. This is used for line segments that are not straight (between the origin and the destination). Only the intermediate Nodes Objects (their IDs) are listed in the array, to save space and avoid repetition.
 
+.. code-block:: js
+
+  {
+    "type": "Node",
+    "name": "mycell01",
+    "duality": "C1",
+    "geometry": {
+      "type": "Point",
+      "boundaries": 874
+    },
+    "edges": [
+      {
+        "type": "Edge",
+        "destination": "R3",
+        "weight": 1.0,
+        "extra_nodes": [153, 123]
+      }
+    ]
+  }
+
 
 ----------------
 Geometry Objects
