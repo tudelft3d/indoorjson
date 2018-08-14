@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "IndoorJSON v0.5",
+  "title": "IndoorJSON v0.1",
   "description": "IndoorJSON specifications v0.1",
   "type": "object",
 
@@ -51,7 +51,7 @@
         "destination" : {"type": "string"},
         "weight" : {"type": "number"},
         "extra_nodes" : { 
-          "type": "array",
+          "type": ["array", "null"],
           "items": {"type": "integer"}
         }
       },
@@ -132,7 +132,7 @@
     "LineString": {
       "type": "object",
       "properties": {
-        "type": { "enum": ["MultiLineString"] },
+        "type": { "enum": ["LineString"] },
         "boundaries": {
           "type": "array",
           "items": {"type": "integer"}
@@ -146,7 +146,7 @@
     "Point": {
       "type": "object",
       "properties": {
-        "type": { "enum": ["MultiPoint"] },
+        "type": { "enum": ["Point"] },
         "boundaries": { 
            "type": "integer"
         }
@@ -167,6 +167,13 @@
       "type": "object",
       "additionalProperties": { "$ref": "#/definitions/CellSpace" }
     },
+    "SpaceLayers": {
+      "type": "object",
+      "additionalProperties": { 
+        "type": "object",
+        "additionalProperties": { "$ref": "#/definitions/Node" }
+      }
+    },    
     "vertices": {
       "type": "array",
       "items": {
