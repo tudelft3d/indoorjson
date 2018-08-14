@@ -94,7 +94,7 @@ def read_dual_graph(sl, j):
                 lsAdj.append(dEdges[s][1])
                 jt = {}
                 jt['type'] = 'Edge'
-                jt['end'] = dEdges[s][1]
+                jt['destination'] = dEdges[s][1]
                 jt['weight'] = dEdges[s][2]
                 jt['extra_nodes'] = None
                 # vertices for non-straight edges
