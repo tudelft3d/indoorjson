@@ -4,7 +4,7 @@ IndoorJSON specifications v0.1
 ==============================
 
 
-.. image:: logo.svg
+.. image:: figs/logo.svg
    :width: 300px
 
 
