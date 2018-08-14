@@ -77,7 +77,7 @@ The CellSpace Objects (which subdivides the space; also called the primal space)
     "Cell87": {
       "type": "CellSpace",
       "name": "myCell_87",
-      "duality": "vertex234",
+      "duality": "node234",
       "duality-spacelayer": "IS1",
       "geometry": {
         "type": "Solid",
@@ -124,6 +124,7 @@ A Node Object, also called State in IndoorGML, represents one node of the dual g
 - may have a member named ``"name"``, whose value is a string describing its name
 - may have one member named ``"duality"``, whose value is the ID (of type string) of the CellSpace object in the PrimalSpaceFeatures;
 - may have one member named ``"geometry"``, whose value is Geometry Objects of type ``"Point"``.
+- may have one member named ``"edges"``, whose value is an array of Edge Objects.
 
 
 Edge Object (Transition)
@@ -151,6 +152,7 @@ Only linear and planar primitives are allowed (no curves or parametric surfaces 
 A Geometry object is a JSON object for which the type member’s value is one of the following:
 
 #. ``"Point"``
+#. ``"LineString"``
 #. ``"CompositeSurface"``
 #. ``"Solid"``
 #. ``"CompositeSolid"``
@@ -189,7 +191,8 @@ Their position in this array (0-based) is used to represent the Geometric Object
 Representations of boundaries
 *****************************
 
-- A ``"Point"`` has one integer value (index of the vertex).
+- A ``"Point"`` has one integer value (index of the node).
+- A ``"LineString"``, has an array containing the nodes ordered from origin to destination.
 - A ``"CompositeSurface"``, has an array containing surfaces, each surface is modelled by an array of array, the first array being the exterior boundary of the surface, and the others the interior boundaries.
 - A ``"Solid"`` has an array of shells, the first array being the exterior shell of the solid, and the others the interior shells. Each shell has an array of surfaces, modelled in the exact same way as a MultiSurface/CompositeSurface.
 - A ``"CompositeSolid"``, has an array containing solids, each solid is modelled as above.
@@ -203,6 +206,13 @@ Representations of boundaries
   {
     "type": "Point",
     "boundaries": 666
+  }
+
+.. code-block:: js
+
+  {
+    "type": "LineString",
+    "boundaries": [33, 232, 0, 72]
   }
 
 .. code-block:: js
