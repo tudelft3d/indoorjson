@@ -41,18 +41,13 @@ def main():
     read_cells(root, j)
 
     #-- save and be-bye
-    json_str = json.dumps(j, indent=2)
-    # json_str = json.dumps(j, separators=(',',':'))
-    # print (json_str)
-    fo = open('/Users/hugo/temp/z.json', 'w')
+    # json_str = json.dumps(j, indent=2)
+    json_str = json.dumps(j, separators=(',',':'))
+    # fo = open('/Users/hugo/temp/z.json', 'w')
+    fo = open('FJK-Haus_IndoorGML_withEXR-corrected_1_0_3.json', 'w')
     fo.write(json_str)
 
 
-
-    # except:
-    #     print ("ERROR: problems while parsing the XML file.")
-    #     return 0
-    # return 1
 
 
 def read_dual_graph(sl, j):
