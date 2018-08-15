@@ -15,10 +15,10 @@ IndoorJSON specifications v0.1
 IndoorJSON Object
 -----------------
 
-A IndoorJSON object represents one indoor model of a given building.
+An IndoorJSON object represents one indoor model of a given building.
 
-- A IndoorJSON object is a JSON object.
-- A IndoorJSON object must have the following 5 members: 
+- An IndoorJSON object is a JSON object.
+- An IndoorJSON object must have the following 5 members: 
 
   #. one member with the name ``"type"``, whose value must be ``"IndoorJSON"``;
   #. one member with the name ``"version"``, whose value must be a string with the version (X.Y) of IndoorJSON used;
@@ -26,8 +26,8 @@ A IndoorJSON object represents one indoor model of a given building.
   #. one member with the name ``"SpaceLayers"``. This is used to represent each of the dual graphs (there can be many). The value of this member is a collection of key-value pairs, where the key is the ID of a dual graph, and the value is a collection of key-value pairs in which each node (also called 'States') is represented. The ID of a Cell Space should be unique (within one dataset/file).
   #. one member with the name ``"vertices"``, whose value is an array of coordinates of each vertex of the city model. Their position in this array (0-based) is used as an index to be referenced by the Geometric Objects. The indexing mechanism of the format `Wavefront OBJ <https://en.wikipedia.org/wiki/Wavefront_.obj_file>`_ is basically reused.
 
-- A IndoorJSON may have one member with the name ``"InterLayerConnections"``, whose value is a list of JSON objects describing the relationships between different SpaceLayers.
-- A IndoorJSON may have one member with the name ``"metadata"``, whose value may contain JSON objects describing the coordinate reference system used, the extent of the dataset, its creator, etc.
+- An IndoorJSON may have one member with the name ``"InterLayerConnections"``, whose value is a list of JSON objects describing the relationships between different SpaceLayers.
+- An IndoorJSON may have one member with the name ``"metadata"``, whose value may contain JSON objects describing the coordinate reference system used, the extent of the dataset, its creator, etc.
 
 An "empty" IndoorJSON object looks like this:
 
@@ -44,7 +44,7 @@ An "empty" IndoorJSON object looks like this:
   }
 
 .. note::
-  While the order of the member values of a IndoorJSON should preferably be as above, not all JSON generators allow one to do this, thus the order is not prescribed.
+  While the order of the member values of an IndoorJSON should preferably be as above, not all JSON generators allow one to do this, thus the order is not prescribed.
 
 
 -------------------
@@ -219,7 +219,7 @@ A Geometry object:
 The coordinates of the vertices
 *******************************
 
-A IndoorJSON must have one member named ``"vertices"``, whose value is an array of coordinates of each vertex of the city model. 
+An IndoorJSON must have one member named ``"vertices"``, whose value is an array of coordinates of each vertex of the city model. 
 Their position in this array (0-based) is used to represent the Geometric Objects.
 
 - one vertex must be an array with exactly 3 values, representing the *(x,y,z)* location of the vertex.
