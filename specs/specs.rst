@@ -39,7 +39,7 @@ An "empty" IndoorJSON object looks like this:
     "metadata": {},
     "PrimalSpaceFeatures": {},
     "SpaceLayers": {},
-    "InterLayerConnections": {},
+    "InterLayerConnections": [],
     "vertices": []
   }
 
@@ -158,6 +158,36 @@ An Edge Object, also called Transition in IndoorGML, represents implicitly one e
       }
     ]
   }
+
+
+
+---------------------
+InterLayerConnections
+---------------------
+
+
+
+.. code-block:: js
+
+  "InterLayerConnections": [
+    {
+      "type": "InterLayerConnection",
+      "node1": {
+        "spacelayer": "dualgraph_01",
+        "id": "R1"
+      },
+      "node2": {
+        "spacelayer": "dualgraph_02",
+        "id": "R3"
+      },
+      "typeOfTopoExpression": "CONTAINS"      
+    },
+    {
+      "type": "InterLayerConnection",
+      ...
+    }
+  ]
+
 
 
 ----------------

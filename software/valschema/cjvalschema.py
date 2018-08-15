@@ -6,8 +6,9 @@ import json
 import jsonschema
 
 
-# fin = open('/Users/hugo/temp/z.json')
+
 fin = open('../../data/FJK-Haus_IndoorGML_withEXR-corrected_1_0_3.json')
+# fin = open('../../data/dummy.json')
 
 def main():
     try:

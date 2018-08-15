@@ -60,6 +60,26 @@
     },
 
 
+    "InterLayerConnection": {
+      "type": "object",
+      "properties": {
+        "type": { "enum": ["InterLayerConnection"] },
+        "node1" : {
+          "spacelayer": "string",
+          "id": "string"
+        },
+        "node2" : {
+          "spacelayer": "string",
+          "id": "string"
+        },
+        "typeOfTopoExpression" : { "enum": ["CONTAINS", "OVERLAPS", "EQUALS", "WITHIN", "CROSSES", "INTERSECTS"] },
+        "comment" : {"type": "string"}
+      },
+      "additionalProperties": false,
+      "required": ["type", "node1", "node2"]
+    },
+    
+
     "Solid": {
       "type": "object",
       "properties": {
@@ -173,6 +193,10 @@
         "type": "object",
         "additionalProperties": { "$ref": "#/definitions/Node" }
       }
+    },
+    "InterLayerConnections": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/InterLayerConnection" }
     },    
     "vertices": {
       "type": "array",
