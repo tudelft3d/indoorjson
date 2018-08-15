@@ -118,25 +118,27 @@ SpaceLayers
 Node Object (State)
 *******************
 
-A Node Object, also called State in IndoorGML, represents one node of the dual graph. It:
+A Node Object, also called 'State' in IndoorGML, represents one node of the dual graph. It:
 
 - must have a member named ``"type"``, whose value must be ``"Node"``;
-- may have a member named ``"name"``, whose value is a string describing its name
+- may have a member named ``"name"``, whose value is a string describing its name;
 - may have one member named ``"duality"``, whose value is the ID (of type string) of the CellSpace object in the PrimalSpaceFeatures;
-- may have one member named ``"geometry"``, whose value is Geometry Objects of type ``"Point"``.
+- may have one member named ``"geometry"``, whose value is Geometry Objects of type ``"Point"``;
 - may have one member named ``"edges"``, whose value is an array of Edge Objects.
 
 
 Edge Object (Transition)
 ************************
 
-An Edge Object, also called Transition in IndoorGML, represents implicitly one edge having a given Node Object as its origin. It:
+An Edge Object, also called 'Transition' in IndoorGML, represents implicitly one edge having a given Node Object as its origin. 
+
+An Edge Object:
 
 - must have a member named ``"type"``, whose value must be ``"Edge"``;
 - may have a member named ``"name"``, whose value is a string describing its name;
-- may have a member named ``"description"``, whose value is a string describing it
-- must have a member named ``"destination"``, whose value the ID of the Node Object of the destination (end node) of the edge.
-- may have one member named ``"weight"``, whose value is the weight of the Edge Object (a float value).
+- may have a member named ``"description"``, whose value is a string describing it;
+- must have a member named ``"destination"``, whose value the ID of the Node Object of the destination (end node) of the edge. Its origin is the Node Object who is its JSON parent;
+- may have one member named ``"weight"``, whose value is the weight of the Edge Object (a float value);
 - may have one member named ``"extra_nodes"``. This is used for line segments that are not straight (between the origin and the destination). Only the intermediate Nodes Objects (their IDs) are listed in the array, to save space and avoid repetition.
 
 .. code-block:: js
@@ -160,12 +162,11 @@ An Edge Object, also called Transition in IndoorGML, represents implicitly one e
   }
 
 
-
 ---------------------
 InterLayerConnections
 ---------------------
 
-
+An IndoorJSON object may have one key-value pair named ``"InterLayerConnections" whose value is an array of InterLayerConnect Objects.
 
 .. code-block:: js
 
@@ -188,6 +189,28 @@ InterLayerConnections
     }
   ]
 
+
+An InterLayerConnection Object:
+
+- must have a member named ``"type"``, whose value must be ``"InterLayerConnection"``;
+- must have a member named ``"node1"``, whose value is a JSON object having two members: (1) ``"id"`` is the ID of the Node/State (a string) involved in the connection; (2) ``"spacelayer" is the ID of the SpaceLayer;
+- must have a member named ``"node2"``, whose value is like that of ``"node1"`` but the other Node/State (a string) involved in the connection;
+- may have a member named ``"typeOfTopoExpression"`` that qualifies the topological relationships between the 2 Nodes. Its value is a string that must be either: "CONTAINS", "OVERLAPS", "EQUALS", "WITHIN", "CROSSES", or "INTERSECTS".
+
+.. code-block:: js
+
+  {
+    "type": "InterLayerConnection",
+    "node1": {
+      "spacelayer": "dualgraph_01",
+      "id": "R1"
+    },
+    "node2": {
+      "spacelayer": "dualgraph_02",
+      "id": "R3"
+    },
+    "typeOfTopoExpression": "CONTAINS"      
+  }
 
 
 ----------------
