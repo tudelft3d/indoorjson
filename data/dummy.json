@@ -1,0 +1,66 @@
+{
+  "type": "IndoorJSON",
+  "version": "0.1",
+  "PrimalSpaceFeatures": {
+    "C1":{
+      "type": "CellSpace",
+      "duality": "R1",
+      "duality-spacelayer": "IS1",
+      "name": "002",
+      "geometry": {
+        "type": "Solid",
+        "boundaries": [
+          [ [[0, 3, 2, 1],[0,1,2]], [[4, 5, 6, 7]], [[0, 1, 5, 4]], [[1, 2, 6, 5]], [[2, 3, 7, 6]], [[3, 0, 4, 7]] ] 
+        ]
+      }
+    },
+    "C2":{
+      "type": "CellSpace",
+      "duality": "R2",
+      "duality-spacelayer": "IS1",
+      "name": "002",
+      "geometry": {
+        "type": "Solid",
+        "boundaries": [
+          [ [[0, 3, 2, 1],[0,1,2]], [[4, 5, 6, 7]], [[0, 1, 5, 4]], [[1, 2, 6, 5]], [[2, 3, 7, 6]], [[3, 0, 4, 7]] ] 
+        ]
+      }
+    }  
+  },
+  "SpaceLayers": {
+    "dualgraph_01": {
+      "R1": {
+        "type": "Node",
+        "name": "mycell01",
+        "duality": "C1",
+        "geometry": {
+          "type": "Point",
+          "boundaries": 2
+        },
+        "edges": [
+          {
+            "type": "Edge",
+            "destination": "R3",
+            "weight": 1.0,
+            "extra_nodes": [3, 5]
+          }
+        ]
+      }
+    }
+  },
+  "InterLayerConnections": [
+    {
+      "type": "InterLayerConnection",
+      "node1": {
+        "spacelayer": "dualgraph_01",
+        "id": "R1"
+      },
+      "node2": {
+        "spacelayer": "dualgraph_01",
+        "id": "R3"
+      },
+      "typeOfTopoExpression": "CONTAINS"      
+    }
+  ],
+  "vertices": []
+}
