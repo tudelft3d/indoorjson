@@ -29,7 +29,7 @@ IndoorJSON is a format for encoding the [IndoorGML](http://indoorgml.net) data m
       "mydualgraph": {
         "N1": {
           "type": "Node",
-          "duality": "Cell011",
+          "duality": "Cell01",
           ...
         },
         ...
