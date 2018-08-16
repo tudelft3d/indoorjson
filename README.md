@@ -16,8 +16,8 @@ IndoorJSON is a format for encoding the [IndoorGML](http://indoorgml.net) data m
     "PrimalSpaceFeatures": {
       "Cell01": {
         "type": "CellSpace",
-        "duality": "R1",
-        "duality-spacelayer": "dualgraph_01",
+        "duality": "N1",
+        "duality-spacelayer": "mydualgraph",
         "geometry": {
           "type": "Solid",
           "boundaries": [...]
@@ -29,7 +29,7 @@ IndoorJSON is a format for encoding the [IndoorGML](http://indoorgml.net) data m
       "mydualgraph": {
         "N1": {
           "type": "Node",
-          "duality": "C1",
+          "duality": "Cell011",
           ...
         },
         ...
