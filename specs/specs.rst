@@ -166,7 +166,7 @@ An Edge Object:
 InterLayerConnections
 ---------------------
 
-An IndoorJSON object may have one key-value pair named ``"InterLayerConnections" whose value is an array of InterLayerConnect Objects.
+An IndoorJSON object may have one key-value pair named ``"InterLayerConnections"`` whose value is an array of InterLayerConnect Objects.
 
 .. code-block:: js
 
