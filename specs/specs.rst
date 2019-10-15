@@ -87,6 +87,34 @@ The CellSpace Objects (which subdivides the space; also called the primal space)
     }
   }
 
+If an Extension is used, then the ``"type"`` will be the semantic value (the meaning) of the cell, for instance for the Navigation Extension:
+
+.. code-block:: js
+
+  "PrimalSpaceFeatures": {
+    "CORRIDOR1": {
+      "type": "TransitionSpace",
+      "duality": "S1",
+      "duality-spacelayer": "base",
+      "attributes": {
+        "class": "1000",
+        "function": "1000",
+        "usage": "1000"
+      },
+      "geometry": {...}
+    },
+    "DOOR1": {
+      "type": "ConnectionSpace",
+      "duality": "S120",
+      "duality-spacelayer": "base",
+      "attributes": {
+          "class": "1010",
+          "function": "1010",
+          "usage": "1010"
+      },
+      "geometry": {...}
+    }
+  }
 
 -----------
 SpaceLayers
