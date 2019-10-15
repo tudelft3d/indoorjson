@@ -1,15 +1,20 @@
 
 import sys
+import os
 import json
 from lxml import etree
 
 
-inputfile = "/Users/hugo/Dropbox/data/indoorgml/FJK-Haus_IndoorGML_withEXR-corrected_1_0_3.gml"
+inputfile = "../../data/FJK-Haus_IndoorGML_withEXR-corrected_1_0_3.gml"
+# inputfile = "/Users/hugo/Dropbox/data/indoorgml/PNU-Hancock/Hancock-PNU-IndoorGML-EPSG3857-20190628.gml"
+
 
 ns = {}
 
 def main():
-    fIn = open(inputfile)
+    ifile = os.path.abspath(inputfile)
+    print("Parsing", ifile)
+    fIn = open(ifile)
     # try:
     parser = etree.XMLParser(ns_clean=True)
     tree = etree.parse(fIn, parser)
@@ -23,11 +28,10 @@ def main():
             ns['xlink'] = "%s" % root.nsmap[key]                
 
     theid = root.get("{%s}id" % ns['gml'])
-    print ("File ID:", theid)
 
     j = {}
     j['type'] = 'IndoorJSON'
-    j['version'] = '0.1'
+    j['version'] = '0.2'
     j['PrimalSpaceFeatures'] = {}
     j['SpaceLayers'] = {}
     j['vertices'] = []
@@ -43,9 +47,10 @@ def main():
     #-- save and be-bye
     # json_str = json.dumps(j, indent=2)
     json_str = json.dumps(j, separators=(',',':'))
-    # fo = open('/Users/hugo/temp/z.json', 'w')
-    fo = open('FJK-Haus_IndoorGML_withEXR-corrected_1_0_3.json', 'w')
+    fout = os.path.abspath('../../data/out.json')
+    fo = open(fout, 'w')
     fo.write(json_str)
+    print("IndoorJSON file save to", fout)
 
 
 
@@ -108,11 +113,12 @@ def read_dual_graph(sl, j):
 
 
 def read_cells(root, j):
-    for cell in root.findall(".//{%s}CellSpace" % ns['indoorgml']):
+    for el in root.findall(".//{%s}cellSpaceMember" % ns['indoorgml']):
+        cell = el[0]
         jc = {}
-        jc['type'] = 'CellSpace'
+        jc['type'] = remove_ns(cell.tag)
         id = cell.get("{%s}id" % ns['gml'])
-        # duality
+        #-- duality
         tmp = cell.find("./{%s}duality" % ns['indoorgml'])
         if tmp is not None:
             duality = tmp.get("{%s}href" % ns['xlink'])
@@ -128,10 +134,24 @@ def read_cells(root, j):
                     if duality in value:
                         jc['duality-spacelayer'] = key
                         break
-        # name
+        #-- name
         tmp = cell.find("./{%s}name" % ns['gml'])
         if tmp is not None:
             jc['name'] = tmp.text
+        
+        #-- other properties (coming from extensions)
+        basic_properties = ["duality", 
+                            "cellSpaceGeometry", 
+                            "externalReference", 
+                            "name", 
+                            "boundedBy", 
+                            "partialboundedBy"]
+        jc['attributes'] = {}
+        for each in cell:
+            if (remove_ns(each.tag) not in basic_properties):
+                # print(each.tag)
+                jc['attributes'][remove_ns(each.tag)] = each.text
+        
         # TODO: externalReference
         # tmp = cell.find("./{%s}externalReference" % ns['indoorgml'])
         # if tmp is not None:
@@ -157,6 +177,10 @@ def read_cells(root, j):
         solid.append(shell)
         jc['geometry']['boundaries'] = solid
         j['PrimalSpaceFeatures'][id] = jc
+
+
+def remove_ns(tag):
+    return tag[tag.rfind('}')+1:]
 
 
 def parse_gml_polygon_ring(n, jvertices):
