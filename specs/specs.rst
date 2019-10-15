@@ -1,6 +1,6 @@
 
 ==============================
-IndoorJSON specifications v0.1
+IndoorJSON specifications v0.2
 ==============================
 
 
@@ -35,7 +35,7 @@ An "empty" IndoorJSON object looks like this:
 
   {
     "type": "IndoorJSON",
-    "version": "0.1",
+    "version": "0.2",
     "metadata": {},
     "PrimalSpaceFeatures": {},
     "SpaceLayers": {},
@@ -53,11 +53,12 @@ PrimalSpaceFeatures
 
 The CellSpace Objects (which subdivides the space; also called the primal space):
 
-- must have a member named ``"type"``, whose value must be ``"CellSpace"``;
+- must have a member named ``"type"``, whose value is the type of the CellSpace. For IndoorGML files core, this value is ``"CellSpace"``, but for Extension (eg the Navigation Extension) this value can be any string (it must be the type of the cell);
 - may have a member named ``"name"``, whose value is a string describing the name of CellSpace;
 - may have one member named ``"duality"``, whose value is the ID of the Node in the dual graph;
 - may have a member named ``"duality-spacelayer"``, whose value is the ID of the dual graph (``"SpaceLayers"``). Both ``"duality-spacelayer"`` and and ``"duality"`` are necessary to identify a node since there can be more than one dual graph.
 - may have one member named ``"geometry"``, whose value is Geometry Objects. 
+- may have one member named ``"attributes"``, whose value is JSON object containing extra properties that are used in IndoorGML Extensions. 
 - may have a member name ``"externalReference"``, whose value is a JSON object that must contain 2 members (both stings): ``"informationSystem"`` (URI of the file) and ``"externalObject"`` (ID of the object in the file).
 
 
