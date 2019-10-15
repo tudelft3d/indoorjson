@@ -22,7 +22,7 @@ An IndoorJSON object represents one indoor model of a given building.
 
   #. one member with the name ``"type"``, whose value must be ``"IndoorJSON"``;
   #. one member with the name ``"version"``, whose value must be a string with the version (X.Y) of IndoorJSON used;
-  #. one member with the name ``"PrimalSpaceFeatures"``. The value of this member is a collection of key-value pairs, where the key is the ID of the CellSpace, and the value is one CellSpace. The ID of a Cell Space should be unique (within one dataset/file).
+  #. one member with the name ``"PrimalSpaceFeatures"``, whose value is a JSON object with 2 properties: ``"CellSpace"`` and ``"CellSpaceBoundaries"``. 
   #. one member with the name ``"SpaceLayers"``. This is used to represent each of the dual graphs (there can be many). The value of this member is a collection of key-value pairs, where the key is the ID of a dual graph, and the value is a collection of key-value pairs in which each node (also called 'States') is represented. The ID of a Cell Space should be unique (within one dataset/file).
   #. one member with the name ``"vertices"``, whose value is an array of coordinates of each vertex of the city model. Their position in this array (0-based) is used as an index to be referenced by the Geometric Objects. The indexing mechanism of the format `Wavefront OBJ <https://en.wikipedia.org/wiki/Wavefront_.obj_file>`_ is basically reused.
 
@@ -51,6 +51,13 @@ An "empty" IndoorJSON object looks like this:
 PrimalSpaceFeatures
 -------------------
 
+The primal space may have 2 members: ``"CellSpace"`` and ``"CellSpaceBoundaries"``.
+
+CellSpace
+*********
+
+The value of this member is a collection of key-value pairs, where the key is the ID of the CellSpace. 
+The ID of a Cell Space should be unique (within one dataset/file).
 The CellSpace Objects (which subdivides the space; also called the primal space):
 
 - must have a member named ``"type"``, whose value is the type of the CellSpace. For IndoorGML files core, this value is ``"CellSpace"``, but for Extension (eg the Navigation Extension) this value can be any string (it must be the type of the cell);
@@ -58,31 +65,34 @@ The CellSpace Objects (which subdivides the space; also called the primal space)
 - may have one member named ``"duality"``, whose value is the ID of the Node in the dual graph;
 - may have a member named ``"duality-spacelayer"``, whose value is the ID of the dual graph (``"SpaceLayers"``). Both ``"duality-spacelayer"`` and and ``"duality"`` are necessary to identify a node since there can be more than one dual graph.
 - may have one member named ``"geometry"``, whose value is Geometry Objects. 
+- may have one member named ``"partialboundedBy"``, whose value is array containing the IDs of the CellSpaceBoundaries partially bounding the cell (eg the doors).
 - may have one member named ``"attributes"``, whose value is JSON object containing extra properties that are used in IndoorGML Extensions. 
 - may have a member name ``"externalReference"``, whose value is a JSON object that must contain 2 members (both stings): ``"informationSystem"`` (URI of the file) and ``"externalObject"`` (ID of the object in the file).
-
 
 .. code-block:: js
 
   "PrimalSpaceFeatures": {
-    "Cell01": {
-      "type": "CellSpace",
-      "name": "myCell_01",
-      "duality": "R1",
-      "duality-spacelayer": "dualgraph_01",
-      "geometry": {
-        "type": "Solid",
-        "boundaries": [...]
-      }
-    },
-    "Cell87": {
-      "type": "CellSpace",
-      "name": "myCell_87",
-      "duality": "node234",
-      "duality-spacelayer": "IS1",
-      "geometry": {
-        "type": "Solid",
-        "boundaries": [...]
+    "CellSpace": {
+      "Cell01": {
+        "type": "CellSpace",
+        "name": "myCell_01",
+        "duality": "R1",
+        "duality-spacelayer": "dualgraph_01",
+        "partialboundedBy": ["Boundary0", "Boundary34", "Boundary15"],
+        "geometry": {
+          "type": "Solid",
+          "boundaries": [...]
+        }
+      },
+      "Cell87": {
+        "type": "CellSpace",
+        "name": "myCell_87",
+        "duality": "node234",
+        "duality-spacelayer": "IS1",
+        "geometry": {
+          "type": "Solid",
+          "boundaries": [...]
+        }
       }
     }
   }
@@ -92,29 +102,66 @@ If an Extension is used, then the ``"type"`` will be the semantic value (the mea
 .. code-block:: js
 
   "PrimalSpaceFeatures": {
-    "CORRIDOR1": {
-      "type": "TransitionSpace",
-      "duality": "S1",
-      "duality-spacelayer": "base",
-      "attributes": {
-        "class": "1000",
-        "function": "1000",
-        "usage": "1000"
+    "CellSpace": {
+      "CORRIDOR1": {
+        "type": "TransitionSpace",
+        "duality": "S1",
+        "duality-spacelayer": "base",
+        "attributes": {
+          "class": "1000",
+          "function": "1000",
+          "usage": "1000"
+        },
+        "geometry": {...}
       },
-      "geometry": {...}
-    },
-    "DOOR1": {
-      "type": "ConnectionSpace",
-      "duality": "S120",
-      "duality-spacelayer": "base",
-      "attributes": {
-          "class": "1010",
-          "function": "1010",
-          "usage": "1010"
-      },
-      "geometry": {...}
+      "DOOR1": {
+        "type": "ConnectionSpace",
+        "duality": "S120",
+        "duality-spacelayer": "base",
+        "attributes": {
+            "class": "1010",
+            "function": "1010",
+            "usage": "1010"
+        },
+        "geometry": {...}
+      }
     }
   }
+
+
+CellSpaceBoundaries
+*******************
+
+The value of this member is a collection of key-value pairs, where the key is the ID of the CellSpaceBoundary. 
+The ID of a CellSpaceBoundary should be unique (within one dataset/file).
+The CellSpaceBoundary Object:
+
+- must have a member named ``"type"``, whose value is the type of the CellSpaceBoundary;
+- may have one member named ``"geometry"``, whose value is a Geometry Object (a CompositeSurface for 3D surfaces).
+
+.. code-block:: js
+
+  "PrimalSpaceFeatures": {
+    "CellSpaceBoundary": {
+      "Boundary0": {
+        "type": "ConnectionBoundary",
+        "geometry": {
+          "type": "CompositeSurface",
+          "boundaries": [...]
+        }
+      },
+      "Boundary762": {
+        "type": "ConnectionBoundary",
+        "geometry": {
+          "type": "CompositeSurface",
+          "boundaries": [...]
+        }
+      }
+    }
+  }
+
+
+
 
 -----------
 SpaceLayers
