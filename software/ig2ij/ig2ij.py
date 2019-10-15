@@ -1,3 +1,7 @@
+#-- small script to convert IndoorGML files to IndoorJSON
+#-- h.ledoux@tudelft.nl
+#-- 2019-10-15
+
 
 import sys
 import os
@@ -6,8 +10,7 @@ from lxml import etree
 
 
 inputfile = "../../data/FJK-Haus_IndoorGML_withEXR-corrected_1_0_3.gml"
-# inputfile = "/Users/hugo/Dropbox/data/indoorgml/PNU-Hancock/Hancock-PNU-IndoorGML-EPSG3857-20190628.gml"
-
+# inputfile = "/Users/hugo/Dropbox/data/indoorgml/KU-EngBuilding-IndoorGML-2019-02-12.gml"
 
 ns = {}
 
@@ -41,8 +44,11 @@ def main():
         slid, jgraph = read_dual_graph(sl, j)
         j['SpaceLayers'][slid] = jgraph
 
-    #-- dual space 
+    #-- primal space: Cells
     read_cells(root, j)
+
+    #-- primal space: Cell Boundaries
+    read_cell_boundaries(root, j)
 
     #-- save and be-bye
     # json_str = json.dumps(j, indent=2)
@@ -113,11 +119,12 @@ def read_dual_graph(sl, j):
 
 
 def read_cells(root, j):
+    j['PrimalSpaceFeatures']['CellSpace'] = {}
     for el in root.findall(".//{%s}cellSpaceMember" % ns['indoorgml']):
         cell = el[0]
         jc = {}
         jc['type'] = remove_ns(cell.tag)
-        id = cell.get("{%s}id" % ns['gml'])
+        theid = cell.get("{%s}id" % ns['gml'])
         #-- duality
         tmp = cell.find("./{%s}duality" % ns['indoorgml'])
         if tmp is not None:
@@ -138,6 +145,15 @@ def read_cells(root, j):
         tmp = cell.find("./{%s}name" % ns['gml'])
         if tmp is not None:
             jc['name'] = tmp.text
+
+        #-- partialboundedBy
+        tmp = cell.findall("./{%s}partialboundedBy" % ns['indoorgml'])
+        if len(tmp) > 0:
+            jc['partialboundedBy'] = []
+            for each in tmp:
+                # print(each.get("{%s}href" % ns['xlink'])[1:])
+                jc['partialboundedBy'].append(each.get("{%s}href" % ns['xlink'])[1:])
+
         
         #-- other properties (coming from extensions)
         basic_properties = ["duality", 
@@ -176,7 +192,34 @@ def read_cells(root, j):
         # TODO : INTERIOR SHELLS
         solid.append(shell)
         jc['geometry']['boundaries'] = solid
-        j['PrimalSpaceFeatures'][id] = jc
+        j['PrimalSpaceFeatures']['CellSpace'][theid] = jc
+
+
+def read_cell_boundaries(root, j):
+    j['PrimalSpaceFeatures']['CellSpaceBoundaries'] = {}
+    for el in root.findall(".//{%s}cellSpaceBoundaryMember" % ns['indoorgml']):
+        cell = el[0]
+        jc = {}
+        jc['type'] = remove_ns(cell.tag)
+        # print (remove_ns(cell.tag))
+        theid = cell.get("{%s}id" % ns['gml'])
+        #-- Polygon3D
+        g3d = cell.find(".//{%s}geometry3D" % ns['indoorgml'])
+        cs = []
+        for poly in g3d.findall(".//{%s}Polygon" % ns['gml']):
+            nexterior = poly.find(".//{%s}exterior" % ns['gml'])
+            lr = parse_gml_polygon_ring(nexterior, j['vertices'])
+            polygon = [lr]
+            ninteriors = poly.findall(".//{%s}interior" % ns['gml'])
+            if len(ninteriors) != 0:
+                irings = []
+                for i in range(len(ninteriors)):
+                    polygon.append(parse_gml_polygon_ring(intnodes[i], j['vertices']))
+            cs.append(polygon)
+        if (len(cs) != 0):
+            jc['geometry'] = {'type': 'CompositeSurface'}
+            jc['geometry']['boundaries'] = cs
+            j['PrimalSpaceFeatures']['CellSpaceBoundaries'][theid] = jc
 
 
 def remove_ns(tag):
